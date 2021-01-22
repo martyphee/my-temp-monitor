@@ -1,57 +1,93 @@
 import Dependencies._
-import Versions.zioLogging
 
 ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.0"
+ThisBuild / name := "cunt-o-meter"
 ThisBuild / organization := "com.martyphee"
-ThisBuild / organizationName := "temp-monitor"
+ThisBuild / organizationName := "Temperature"
+
+idePackagePrefix := Some("com.martyphee")
+
+resolvers += Resolver.sonatypeRepo("snapshots")
 
 lazy val flywaySettings = Seq(
-  flywayUrl := "jdbc:postgresql://localhost:5432/temp_monitor",
+  flywayUrl := "jdbc:postgresql://localhost:5432/temperature",
   flywayUser := "postgres",
   flywayPassword := "",
-  flywayUrl in Test := "jdbc:postgresql://localhost:5432/temp_monitor_test",
+  flywayUrl in Test := "jdbc:postgresql://localhost:5432/temperature",
   flywayUser in Test := "postgres",
   flywayPassword in Test := "",
   flywayBaselineOnMigrate := true
 )
 
-val commonJvmSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings
-
-lazy val dbDependencies = List(
-  "org.tpolecat" %% "skunk-core" % "0.0.20"
-)
-
-lazy val root = (project in file("server"))
-  .settings(commonJvmSettings)
+lazy val root = (project in file("."))
   .settings(
-    name := "temp-monitor-server",
-    libraryDependencies ++= dbDependencies ++ Seq(
-      scalaTest % Test,
-      "dev.zio" %% "zio-interop-cats" % Versions.zioInteropCats,
-      "org.typelevel" %% "cats-effect" % Versions.catsEffect,
-      "com.typesafe" % "config" % "1.4.1",
-      "org.http4s" %% "http4s-core" % Versions.http4s,
-      "org.http4s" %% "http4s-dsl" % Versions.http4s,
-      "org.http4s" %% "http4s-blaze-server" % Versions.http4s,
-      "org.http4s" %% "http4s-circe" % Versions.http4s,
-      "io.circe" %% "circe-generic" % Versions.circe,
-      "is.cir" %% "ciris-cats" % Versions.ciris,
-      "is.cir" %% "ciris-cats-effect" % Versions.ciris,
-      "is.cir" %% "ciris-core" % Versions.ciris,
-      "is.cir" %% "ciris-enumeratum" % Versions.ciris,
-      "is.cir" %% "ciris-generic" % Versions.ciris,
-      "is.cir" %% "ciris-refined" % Versions.ciris,
-      "com.softwaremill.tapir" %% "tapir-core" % Versions.tapir,
-      "com.softwaremill.tapir" %% "tapir-http4s-server" % Versions.tapir,
-      "com.softwaremill.tapir" %% "tapir-swagger-ui-http4s" % Versions.tapir,
-      "com.softwaremill.tapir" %% "tapir-openapi-docs" % Versions.tapir,
-      "com.softwaremill.tapir" %% "tapir-openapi-circe-yaml" % Versions.tapir,
-      "com.softwaremill.tapir" %% "tapir-json-circe" % Versions.tapir,
-      "com.softwaremill.sttp.tapir" %% "tapir-zio" % "0.17.1"
-      "com.softwaremill.sttp.tapir" %% "tapir-zio-http4s-server" % "0.17.1"
-      "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+    name := "temperature"
+  )
+  .aggregate(core, tests)
+
+lazy val tests = (project in file("modules/tests"))
+  .configs(IntegrationTest)
+  .settings(
+    name := "temperature-test-suite",
+    scalacOptions += "-Ymacro-annotations",
+    scalafmtOnCompile := true,
+    Defaults.itSettings,
+    libraryDependencies ++= Seq(
+      compilerPlugin(Libraries.kindProjector cross CrossVersion.full),
+      compilerPlugin(Libraries.betterMonadicFor),
+      Libraries.scalaCheck,
+      Libraries.scalaTest,
+      Libraries.scalaTestPlus
+    )
+  )
+  .dependsOn(core)
+
+lazy val core = (project in file("modules/core"))
+  .enablePlugins(DockerPlugin)
+  .enablePlugins(AshScriptPlugin)
+  .settings(
+    name := "temperature-core",
+    packageName in Docker := "temperature",
+    scalacOptions += "-Ymacro-annotations",
+    scalafmtOnCompile := true,
+    resolvers += Resolver.sonatypeRepo("snapshots"),
+    Defaults.itSettings,
+    dockerBaseImage := "openjdk:8u201-jre-alpine3.9",
+    dockerExposedPorts ++= Seq(8080),
+    makeBatScripts := Seq(),
+    dockerUpdateLatest := true,
+    libraryDependencies ++= Seq(
+      compilerPlugin(Libraries.kindProjector cross CrossVersion.full),
+      compilerPlugin(Libraries.betterMonadicFor),
+      Libraries.cats,
+      Libraries.catsEffect,
+      Libraries.catsMeowMtl,
+      Libraries.catsRetry,
+      Libraries.circeCore,
+      Libraries.circeGeneric,
+      Libraries.circeParser,
+      Libraries.circeRefined,
+      Libraries.cirisCore,
+      Libraries.cirisEnum,
+      Libraries.cirisRefined,
+      Libraries.fs2,
+      Libraries.http4sDsl,
+      Libraries.http4sServer,
+      Libraries.http4sClient,
+      Libraries.http4sCirce,
+      Libraries.http4sJwtAuth,
+      Libraries.javaxCrypto,
+      Libraries.log4cats,
+      Libraries.logback % Runtime,
+      Libraries.newtype,
+      Libraries.redis4catsEffects,
+      Libraries.redis4catsLog4cats,
+      Libraries.refinedCore,
+      Libraries.refinedCats,
+      Libraries.skunkCore,
+      Libraries.skunkCirce,
+      Libraries.squants
     )
   )
 
