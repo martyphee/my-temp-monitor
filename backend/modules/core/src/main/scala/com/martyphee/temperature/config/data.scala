@@ -22,6 +22,7 @@ object data {
     port: UserPortNumber,
     user: NonEmptyString,
     database: NonEmptyString,
+    password: NonEmptyString,
     max: PosInt
   )
 
