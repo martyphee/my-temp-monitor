@@ -5,7 +5,6 @@ import cats.effect._
 import cats.effect.implicits._
 import cats.syntax.all._
 import com.martyphee.temperature.domain.healthcheck._
-import dev.profunktor.redis4cats.RedisCommands
 
 import scala.concurrent.duration._
 import skunk._
@@ -18,28 +17,19 @@ trait HealthCheck[F[_]] {
 
 object LiveHealthCheck {
   def make[F[_]: Concurrent: Parallel: Timer](
-    sessionPool: Resource[F, Session[F]],
-    redis: RedisCommands[F, String, String]
+    sessionPool: Resource[F, Session[F]]
   ): F[HealthCheck[F]] =
     Sync[F].delay(
-      new LiveHealthCheck[F](sessionPool, redis)
+      new LiveHealthCheck[F](sessionPool)
     )
 }
 
 final class LiveHealthCheck[F[_]: Concurrent: Parallel: Timer] private (
-  sessionPool: Resource[F, Session[F]],
-  redis: RedisCommands[F, String, String]
+  sessionPool: Resource[F, Session[F]]
 ) extends HealthCheck[F] {
 
   val q: Query[Void, Int] =
     sql"SELECT pid FROM pg_stat_activity".query(int4)
-
-  val redisHealth: F[RedisStatus] =
-    redis.ping
-      .map(_.nonEmpty)
-      .timeout(1.second)
-      .orElse(false.pure[F])
-      .map(RedisStatus.apply)
 
   val postgresHealth: F[PostgresStatus] =
     sessionPool
@@ -50,6 +40,6 @@ final class LiveHealthCheck[F[_]: Concurrent: Parallel: Timer] private (
       .map(PostgresStatus.apply)
 
   val status: F[AppStatus] =
-    (redisHealth, postgresHealth).parMapN(AppStatus)
+    postgresHealth.map(AppStatus)
 
 }

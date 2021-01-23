@@ -7,7 +7,6 @@ object healthcheck {
   @newtype case class PostgresStatus(value: Boolean)
 
   case class AppStatus(
-    redis: RedisStatus,
     postgres: PostgresStatus
   )
 }

@@ -18,7 +18,7 @@ object Main extends IOApp {
       Logger[IO].info(s"Loaded config $cfg") >>
         AppResources.make[IO](cfg).use { res =>
           for {
-            algebras <- Algebras.make[IO](res.redis, res.psql)
+            algebras <- Algebras.make[IO](res.psql)
             api      <- HttpApi.make[IO](algebras, cfg.loginToken)
             _ <- BlazeServerBuilder[IO](ExecutionContext.global)
                   .bindHttp(
