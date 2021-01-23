@@ -1,2 +1,2 @@
-web: backend/modules/core/target/universal/stage/bin/temperature-core -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -XX:+UseConcMarkSweepGC
-console: backend/modules/core/target/universal/stage/bin/temperature-core -main scala.tools.nsc.MainGenericRunner -usejavacp
+web: modules/core/target/universal/stage/bin/temperature-core -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -XX:+UseConcMarkSweepGC
+console: modules/core/target/universal/stage/bin/temperature-core -main scala.tools.nsc.MainGenericRunner -usejavacp
