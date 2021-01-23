@@ -1,0 +1,2 @@
+web: backend/modules/core/target/universal/stage/bin/temperature-core
+console: backend/modules/core/target/universal/stage/bin/temperature-core -main scala.tools.nsc.MainGenericRunner -usejavacp

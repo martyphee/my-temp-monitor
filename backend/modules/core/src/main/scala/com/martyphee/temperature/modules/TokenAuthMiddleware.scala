@@ -1,17 +1,17 @@
 package com.martyphee.temperature.modules
 
 import cats.MonadError
-import cats.data.{Kleisli, OptionT}
+import cats.data.{ Kleisli, OptionT }
 import cats.implicits._
 import dev.profunktor.auth.AuthHeaders
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware
-import org.http4s.{AuthedRoutes, Request}
+import org.http4s.{ AuthedRoutes, Request }
 
 object TokenAuthMiddleware {
-  def apply[F[_] : MonadError[*[_], Throwable], A](
-                                                    retrieveUser: String => F[Option[A]]
-                                                  ): AuthMiddleware[F, A] = {
+  def apply[F[_]: MonadError[*[_], Throwable], A](
+    retrieveUser: String => F[Option[A]]
+  ): AuthMiddleware[F, A] = {
     val dsl = new Http4sDsl[F] {};
     import dsl._
 
