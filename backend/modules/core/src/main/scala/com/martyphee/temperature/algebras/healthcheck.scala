@@ -29,7 +29,7 @@ final class LiveHealthCheck[F[_]: Concurrent: Parallel: Timer] private (
 ) extends HealthCheck[F] {
 
   val q: Query[Void, Int] =
-    sql"SELECT pid FROM pg_stat_activity".query(int4)
+    sql"SELECT now()".query(int4)
 
   val postgresHealth: F[PostgresStatus] =
     sessionPool
