@@ -51,7 +51,7 @@ final class HttpApi[F[_]: Concurrent: Timer] private (algebras: Algebras[F], log
   private val openRoutes: HttpRoutes[F] = healthRoutes
 
   // Secured Routes
-  private val readingRoutes = new ReadingRoutes[F](algebras.readings).routes(usersMiddleware)
+  private val readingRoutes = new ReadingRoutes[F](algebras.readings).secureRoutes(usersMiddleware)
 
   private val routes: HttpRoutes[F] = Router(
     version.v1 -> openRoutes,

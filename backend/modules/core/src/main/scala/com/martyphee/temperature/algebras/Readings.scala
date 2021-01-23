@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 
 trait Readings[F[_]] {
   def create(temperature: ReadingParam): F[Unit]
+  def findAll: F[List[Reading]]
 }
 
 object LiveReadings {
@@ -37,6 +38,17 @@ final class LiveReadings[F[_]: BracketThrow: GenUUID] private (sessionPool: Reso
         }
       }
     }
+
+  override def findAll: F[List[Reading]] =
+    sessionPool.use { session =>
+      session.prepare(selectAll).use { cmd =>
+        GenUUID[F].make[ReadingId].flatMap { id =>
+          cmd
+            .execute(Reading(id, ReadingTemperature(temperature.value.value), ReadingCreatedAt(LocalDateTime.now())))
+            .void
+        }
+      }
+    }
 }
 
 private object ReadingsQueries {
@@ -45,11 +57,10 @@ private object ReadingsQueries {
       case i ~ n ~ t => Reading(ReadingId(i), ReadingTemperature(n), ReadingCreatedAt(t))
     }(b => b.id.value ~ b.temperature.value ~ b.createdAt.createdAt)
 
-//  val selectAll: Query[Void, Cunt] =
-//    sql"""
-//        SELECT * FROM cunt
-//       """.query(codec)
-
+  val selectAll: Query[Void, Reading] =
+    sql"""
+         select * from reading
+         """
   val insertBrand: Command[Reading] =
     sql"""
         INSERT INTO reading

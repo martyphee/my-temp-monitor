@@ -1,2 +1,2 @@
-web: modules/core/target/universal/stage/bin/temperature-core -server -Xmx=512MB -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -XX:+UseConcMarkSweepGC
+web: modules/core/target/universal/stage/bin/temperature-core -server -Xmx350m -Xss512k -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -XX:+UseConcMarkSweepGC
 console: modules/core/target/universal/stage/bin/temperature-core -main scala.tools.nsc.MainGenericRunner -usejavacp

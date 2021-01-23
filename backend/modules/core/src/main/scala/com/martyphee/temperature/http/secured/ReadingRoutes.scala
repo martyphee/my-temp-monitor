@@ -17,13 +17,22 @@ final class ReadingRoutes[F[_]: Defer: JsonDecoder: Monad](
 
   private[secured] val prefixPath = "/reading"
 
-  private val httpRoutes: AuthedRoutes[CommonUser, F] = AuthedRoutes.of {
+  private val secureHttpRoutes: AuthedRoutes[CommonUser, F] = AuthedRoutes.of {
     // Add items to the cart
     case ar @ POST -> Root as _ =>
       ar.req.asJsonDecode[ReadingParam].flatMap(reading => Created(readings.create(reading)))
   }
 
-  def routes(authMiddleware: AuthMiddleware[F, CommonUser]): HttpRoutes[F] = Router(
-    prefixPath -> authMiddleware(httpRoutes)
+  private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
+    case GET -> Root =>
+      Ok(readings.findAll)
+  }
+
+  val routes: HttpRoutes[F] = Router(
+    prefixPath -> httpRoutes
+  )
+
+  def secureRoutes(authMiddleware: AuthMiddleware[F, CommonUser]): HttpRoutes[F] = Router(
+    prefixPath -> authMiddleware(secureHttpRoutes)
   )
 }
