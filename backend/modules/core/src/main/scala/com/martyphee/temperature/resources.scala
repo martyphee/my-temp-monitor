@@ -28,6 +28,7 @@ object AppResources {
           host = c.host.value,
           port = c.port.value,
           user = c.user.value,
+          password = Some(c.password.value),
           database = c.database.value,
           max = c.max.value
         )
