@@ -10,7 +10,7 @@ import com.martyphee.temperature.config.environments._
 import eu.timepit.refined._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.cats._
-import eu.timepit.refined.types.all.UserPortNumber
+import eu.timepit.refined.types.net.UserPortNumber
 import eu.timepit.refined.types.string._
 
 import java.net.URI
@@ -32,8 +32,9 @@ object load {
   private def default(): ConfigValue[AppConfig] =
     (
       env("SC_LOGIN_TOKEN").as[NonEmptyString].secret,
-      env("DATABASE_URL").as[NonEmptyString].secret
-    ).parMapN { (token, dbUrl) =>
+      env("DATABASE_URL").as[NonEmptyString].secret,
+      env("PORT").as[UserPortNumber]
+    ).parMapN { (token, dbUrl, httpPort) =>
       // This feels a bit ugly. Need to rethink it?
       val uri = URI.create(dbUrl.value)
       val host: Either[String, NonEmptyString] = refineV(uri.getHost)
@@ -58,7 +59,7 @@ object load {
         RedisConfig(RedisURI("redis://127.0.0.1")),
         HttpServerConfig(
           host = "0.0.0.0",
-          port = 8080
+          port = httpPort
         ),
         token.value
       )
