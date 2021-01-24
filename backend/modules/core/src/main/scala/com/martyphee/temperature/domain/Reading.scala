@@ -7,6 +7,17 @@ import java.util.UUID
 object Reading {
 
   @newtype case class ReadingId(value: UUID)
+
+  object ReadingId {
+    def apply(uuid: String):ReadingId = {
+      ReadingId(UUID.nameUUIDFromBytes(uuid.getBytes))
+    }
+  }
+
+  object ReadingTemperature {
+    def apply(temp: String): ReadingTemperature = ReadingTemperature(BigDecimal(temp))
+  }
+
   @newtype case class ReadingTemperature(value: BigDecimal)
   @newtype case class ReadingCreatedAt(createdAt: LocalDateTime)
 

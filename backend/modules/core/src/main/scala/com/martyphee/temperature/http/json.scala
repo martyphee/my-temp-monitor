@@ -1,7 +1,7 @@
 package com.martyphee.temperature.http
 
 import cats.Applicative
-import com.martyphee.temperature.domain.Reading.ReadingParam
+import com.martyphee.temperature.domain.Reading.{Reading, ReadingParam}
 import com.martyphee.temperature.domain.healthcheck.AppStatus
 import dev.profunktor.auth.jwt.JwtToken
 import io.circe._
@@ -45,4 +45,7 @@ private[http] trait JsonCodecs {
 
   implicit val userDecoder: Decoder[ReadingParam] = deriveDecoder[ReadingParam]
   implicit val userEncoder: Encoder[ReadingParam] = deriveEncoder[ReadingParam]
+
+  implicit val brandDecoder: Decoder[Reading] = deriveDecoder[Reading]
+  implicit val brandEncoder: Encoder[Reading] = deriveEncoder[Reading]
 }

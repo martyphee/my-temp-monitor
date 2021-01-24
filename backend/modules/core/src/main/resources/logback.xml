@@ -1,13 +1,14 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %m%n %ex</pattern>
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="skunk" level="TRACE"/>
+    <logger name="http4s"/>
+
+    <root level="TRACE">
         <appender-ref ref="STDOUT" />
     </root>
-
-    <logger name="http4s"/>
 </configuration>

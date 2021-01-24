@@ -29,7 +29,7 @@ final class ReadingRoutes[F[_]: Defer: JsonDecoder: Monad](
   }
 
   val routes: HttpRoutes[F] = Router(
-    prefixPath -> httpRoutes
+    s"${prefixPath}s" -> httpRoutes
   )
 
   def secureRoutes(authMiddleware: AuthMiddleware[F, CommonUser]): HttpRoutes[F] = Router(

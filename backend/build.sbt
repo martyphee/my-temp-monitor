@@ -86,6 +86,7 @@ lazy val core = (project in file("modules/core"))
       Libraries.refinedCore,
       Libraries.refinedCats,
       Libraries.skunkCore,
+      Libraries.skunkTracing,
       Libraries.skunkCirce,
       Libraries.squants
     )

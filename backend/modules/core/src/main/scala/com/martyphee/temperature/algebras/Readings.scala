@@ -3,10 +3,10 @@ package com.martyphee.temperature.algebras
 import cats.effect._
 import cats.syntax.all._
 import com.martyphee.temperature.domain.Reading._
-import com.martyphee.temperature.effects._
+import com.martyphee.temperature.effects.{BracketThrow, GenUUID}
+import skunk._
 import skunk.codec.all._
 import skunk.implicits._
-import skunk._
 
 import java.time.LocalDateTime
 
@@ -24,7 +24,7 @@ object LiveReadings {
     )
 }
 
-final class LiveReadings[F[_]: BracketThrow: GenUUID] private (sessionPool: Resource[F, Session[F]])
+final class LiveReadings[F[_]: Sync: BracketThrow: GenUUID] private (sessionPool: Resource[F, Session[F]])
     extends Readings[F] {
   import ReadingsQueries._
 
@@ -41,30 +41,29 @@ final class LiveReadings[F[_]: BracketThrow: GenUUID] private (sessionPool: Reso
 
   override def findAll: F[List[Reading]] =
     sessionPool.use { session =>
-      session.prepare(selectAll).use { cmd =>
-        GenUUID[F].make[ReadingId].flatMap { id =>
-          cmd
-            .execute(Reading(id, ReadingTemperature(temperature.value.value), ReadingCreatedAt(LocalDateTime.now())))
-            .void
-        }
+      session.prepare(selectAll).use { ps =>
+        ps.stream(Void, 1024).compile.toList
       }
     }
 }
 
 private object ReadingsQueries {
   val codec: Codec[Reading] =
-    (uuid ~ numeric ~ timestamp).imap {
+    (uuid ~ numeric(5,3) ~ timestamp).imap {
       case i ~ n ~ t => Reading(ReadingId(i), ReadingTemperature(n), ReadingCreatedAt(t))
     }(b => b.id.value ~ b.temperature.value ~ b.createdAt.createdAt)
 
   val selectAll: Query[Void, Reading] =
     sql"""
-         select * from reading
-         """
+         select id, temperature, created_at
+         from reading
+         order by created_at
+         limit 20
+         """.query(codec)
+
   val insertBrand: Command[Reading] =
     sql"""
         INSERT INTO reading
         VALUES ($codec)
         """.command
-
 }

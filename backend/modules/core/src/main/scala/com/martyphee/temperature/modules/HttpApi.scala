@@ -47,15 +47,15 @@ final class HttpApi[F[_]: Concurrent: Timer] private (algebras: Algebras[F], log
 
   private val usersMiddleware = TokenAuthMiddleware[F, CommonUser](userAuth.findUser)
 
-  // Combining all the http routes
-  private val openRoutes: HttpRoutes[F] = healthRoutes
-
   // Secured Routes
-  private val readingRoutes = new ReadingRoutes[F](algebras.readings).secureRoutes(usersMiddleware)
+  private val readingRoutes = new ReadingRoutes[F](algebras.readings)
+
+  // Combining all the http routes
+  private val openRoutes: HttpRoutes[F] = healthRoutes <+> readingRoutes.routes
 
   private val routes: HttpRoutes[F] = Router(
     version.v1 -> openRoutes,
-    version.v1 -> readingRoutes
+    version.v1 -> readingRoutes.secureRoutes(usersMiddleware)
   )
 
   private val middleware: HttpRoutes[F] => HttpRoutes[F] = {

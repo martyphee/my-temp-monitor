@@ -18,6 +18,7 @@ object Dependencies {
     val refined       = "0.9.19"
     val redis4cats    = "0.10.3"
     val skunk         = "0.0.21"
+    val natchez       = "0.0.18"
     val squants       = "1.7.0"
 
     val betterMonadicFor = "0.3.1"
@@ -70,6 +71,7 @@ object Dependencies {
 
     val skunkCore  = "org.tpolecat" %% "skunk-core"  % Versions.skunk
     val skunkCirce = "org.tpolecat" %% "skunk-circe" % Versions.skunk
+    val skunkTracing = "org.tpolecat"  %% "natchez-jaeger" % Versions.natchez
 
     // Compiler plugins
     val betterMonadicFor = "com.olegpy"    %% "better-monadic-for" % Versions.betterMonadicFor
