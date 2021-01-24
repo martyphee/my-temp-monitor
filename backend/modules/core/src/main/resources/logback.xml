@@ -8,7 +8,7 @@
     <logger name="skunk" level="TRACE"/>
     <logger name="http4s"/>
 
-    <root level="TRACE">
+    <root level="WARNING">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
