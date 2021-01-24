@@ -1,4 +1,5 @@
 <configuration>
+    <variable name="LOG_LEVEL" value="${LOG_LEVEL:-DEBUG}" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %m%n %ex</pattern>
@@ -8,7 +9,7 @@
     <logger name="skunk" level="TRACE"/>
     <logger name="http4s"/>
 
-    <root level="WARNING">
+    <root level="${LOG_LEVEL}">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
