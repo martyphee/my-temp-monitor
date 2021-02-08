@@ -1,6 +1,7 @@
 package temperature
 
 import com.martyphee.temperature.domain.Reading.ReadingParam
+import com.martyphee.temperature.domain.TemperatureEvent.CreateTemperatureEvent
 import io.estatico.newtype.Coercible
 import io.estatico.newtype.ops._
 import org.scalacheck.{Arbitrary, Gen}
@@ -22,4 +23,6 @@ object arbitraries {
   implicit val arbBrand: Arbitrary[ReadingParam] =
     Arbitrary(readingGen)
 
+  implicit val arbCreateTemperatureReading: Arbitrary[CreateTemperatureEvent] =
+    Arbitrary(temperatureEventGen)
 }

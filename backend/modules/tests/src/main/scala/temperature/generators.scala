@@ -1,9 +1,12 @@
 package temperature
 
 import com.martyphee.temperature.domain.Reading._
+import com.martyphee.temperature.domain.TemperatureEvent._
 import io.estatico.newtype.Coercible
 import io.estatico.newtype.ops._
-import org.scalacheck.Gen
+import org.scalacheck._
+import Gen._
+import com.martyphee.temperature.domain.TemperatureEvent.EventType.{HumidityReading, TemperatureReading}
 import squants.market._
 
 import java.math.MathContext
@@ -39,8 +42,17 @@ object generators {
         Gen.buildableOfN[String, Char](n, Gen.alphaChar)
       }
 
+  def chooseType: Gen[EventType] =
+    Gen.oneOf(const(TemperatureReading), const(HumidityReading))
+
   val readingGen: Gen[ReadingParam] =
     for {
       i <- genDecimal[ReadingTemperature]
     } yield ReadingParam(i)
+
+  val temperatureEventGen: Gen[CreateTemperatureEvent] =
+    for {
+      e <- chooseType
+    } yield CreateTemperatureEvent(e)
+
 }

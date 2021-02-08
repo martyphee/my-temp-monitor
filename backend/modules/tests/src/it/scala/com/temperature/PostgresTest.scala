@@ -2,8 +2,9 @@ package com.temperature
 
 import cats.effect._
 import cats.implicits.{catsSyntaxEq => _, _}
-import com.martyphee.temperature.algebras.LiveReadings
+import com.martyphee.temperature.algebras.{LiveEvents, LiveReadings}
 import com.martyphee.temperature.domain.Reading.ReadingParam
+import com.martyphee.temperature.domain.TemperatureEvent.CreateTemperatureEvent
 import natchez.Trace.Implicits.noop
 import skunk._
 import suite.{IOAssertion, ResourceSuite}
@@ -34,6 +35,23 @@ class PostgresTest extends ResourceSuite[Resource[IO, Session[IO]]] {
 //            _ <- IO.pure(println(s"saved: ${y.head.temperature.value}, gen: ${reading.value.value}"))
           } yield assert(
             x.isEmpty && y.count(_.temperature.value === reading.value.value) === 1
+          )
+        }
+      }
+    }
+  }
+
+  withResources { pool =>
+    test("Events") {
+      forAll(MaxTests) { (event: CreateTemperatureEvent) =>
+        IOAssertion {
+          for {
+            c <- LiveEvents.make[IO](pool)
+            x <- c.findAll
+            _ <- c.create(event)
+            y <- c.findAll
+          } yield assert(
+            x.isEmpty && y.count(_.eventType.toString === event.eventType.toString) === 1
           )
         }
       }
