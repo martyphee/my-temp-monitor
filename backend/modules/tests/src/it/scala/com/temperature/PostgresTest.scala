@@ -32,7 +32,6 @@ class PostgresTest extends ResourceSuite[Resource[IO, Session[IO]]] {
             x <- c.findAll
             _ <- c.create(reading)
             y <- c.findAll
-//            _ <- IO.pure(println(s"saved: ${y.head.temperature.value}, gen: ${reading.value.value}"))
           } yield assert(
             x.isEmpty && y.count(_.temperature.value === reading.value.value) === 1
           )

@@ -6,7 +6,7 @@ import io.estatico.newtype.Coercible
 import io.estatico.newtype.ops._
 import org.scalacheck._
 import Gen._
-import com.martyphee.temperature.domain.TemperatureEvent.EventType.{HumidityReading, TemperatureReading}
+import com.martyphee.temperature.domain.TemperatureEvent.EventType._
 import squants.market._
 
 import java.math.MathContext
@@ -43,7 +43,7 @@ object generators {
       }
 
   def chooseType: Gen[EventType] =
-    Gen.oneOf(const(TemperatureReading), const(HumidityReading))
+    Gen.oneOf(const(FanOn), const(FanOff))
 
   val readingGen: Gen[ReadingParam] =
     for {

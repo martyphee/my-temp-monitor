@@ -11,8 +11,8 @@ object TemperatureEvent {
   sealed abstract class EventType extends EnumEntry with Lowercase
 
   object EventType extends Enum[EventType] {
-    case object TemperatureReading extends EventType
-    case object HumidityReading extends EventType
+    case object FanOn extends EventType
+    case object FanOff extends EventType
 
     val values = findValues
   }
