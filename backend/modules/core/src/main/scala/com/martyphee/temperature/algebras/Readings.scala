@@ -3,7 +3,7 @@ package com.martyphee.temperature.algebras
 import cats.effect._
 import cats.syntax.all._
 import com.martyphee.temperature.domain.Reading._
-import com.martyphee.temperature.effects.{BracketThrow, GenUUID}
+import com.martyphee.temperature.effects.{ BracketThrow, GenUUID }
 import skunk._
 import skunk.codec.all._
 import skunk.implicits._
@@ -40,16 +40,12 @@ final class LiveReadings[F[_]: Sync: BracketThrow: GenUUID] private (sessionPool
     }
 
   override def findAll: F[List[Reading]] =
-    sessionPool.use { session =>
-      session.prepare(selectAll).use { ps =>
-        ps.stream(Void, 1024).compile.toList
-      }
-    }
+    sessionPool.use(session => session.prepare(selectAll).use(ps => ps.stream(Void, 1024).compile.toList))
 }
 
 private object ReadingsQueries {
   val codec: Codec[Reading] =
-    (uuid ~ numeric(5,3) ~ timestamp).imap {
+    (uuid ~ numeric(5, 3) ~ timestamp).imap {
       case i ~ n ~ t => Reading(ReadingId(i), ReadingTemperature(n), ReadingCreatedAt(t))
     }(b => b.id.value ~ b.temperature.value ~ b.createdAt.createdAt)
 

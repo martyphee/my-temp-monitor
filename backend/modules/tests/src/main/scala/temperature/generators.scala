@@ -29,7 +29,7 @@ object generators {
 
   def genDecimal[A: Coercible[BigDecimal, *]]: Gen[A] =
     for {
-      n <- Gen.choose[BigDecimal](-100,100)
+      n <- Gen.choose[BigDecimal](-100, 100)
     } yield n.round(new MathContext(scale)).coerce[A]
 
   val genMoney: Gen[Money] =
@@ -38,9 +38,7 @@ object generators {
   val genNonEmptyString: Gen[String] =
     Gen
       .chooseNum(21, 40)
-      .flatMap { n =>
-        Gen.buildableOfN[String, Char](n, Gen.alphaChar)
-      }
+      .flatMap(n => Gen.buildableOfN[String, Char](n, Gen.alphaChar))
 
   def chooseType: Gen[EventType] =
     Gen.oneOf(const(FanOn), const(FanOff))

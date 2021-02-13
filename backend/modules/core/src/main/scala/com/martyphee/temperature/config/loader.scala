@@ -36,10 +36,10 @@ object load {
       env("PORT").as[UserPortNumber]
     ).parMapN { (token, dbUrl, httpPort) =>
       // This feels a bit ugly. Need to rethink it?
-      val uri = URI.create(dbUrl.value)
-      val host: Either[String, NonEmptyString] = refineV(uri.getHost)
-      val port: Either[String, UserPortNumber] = refineV(uri.getPort)
-      val user: Either[String, NonEmptyString] = refineV(uri.getUserInfo.split(":")(0))
+      val uri                                      = URI.create(dbUrl.value)
+      val host: Either[String, NonEmptyString]     = refineV(uri.getHost)
+      val port: Either[String, UserPortNumber]     = refineV(uri.getPort)
+      val user: Either[String, NonEmptyString]     = refineV(uri.getUserInfo.split(":")(0))
       val password: Either[String, NonEmptyString] = refineV(uri.getUserInfo.split(":")(1))
       val database: Either[String, NonEmptyString] = refineV(uri.getPath.substring(1))
 

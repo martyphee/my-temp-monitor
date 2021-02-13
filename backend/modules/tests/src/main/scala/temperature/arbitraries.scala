@@ -4,7 +4,7 @@ import com.martyphee.temperature.domain.Reading.ReadingParam
 import com.martyphee.temperature.domain.TemperatureEvent.CreateTemperatureEvent
 import io.estatico.newtype.Coercible
 import io.estatico.newtype.ops._
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{ Arbitrary, Gen }
 import temperature.generators._
 
 import java.util.UUID

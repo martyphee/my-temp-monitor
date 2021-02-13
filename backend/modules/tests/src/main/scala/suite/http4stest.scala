@@ -12,8 +12,8 @@ trait HttpTestSuite extends PureTestSuite {
   case object DummyError extends NoStackTrace
 
   def assertHttp[A: Encoder](routes: HttpRoutes[IO], req: Request[IO])(
-      expectedStatus: Status,
-      expectedBody: A
+    expectedStatus: Status,
+    expectedBody: A
   ) =
     routes.run(req).value.flatMap {
       case Some(resp) =>

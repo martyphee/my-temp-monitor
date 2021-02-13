@@ -1,7 +1,7 @@
 package com.martyphee.temperature.http
 
 import cats.Applicative
-import com.martyphee.temperature.domain.Reading.{Reading, ReadingParam}
+import com.martyphee.temperature.domain.Reading.{ Reading, ReadingParam }
 import com.martyphee.temperature.domain.healthcheck.AppStatus
 import dev.profunktor.auth.jwt.JwtToken
 import io.circe._

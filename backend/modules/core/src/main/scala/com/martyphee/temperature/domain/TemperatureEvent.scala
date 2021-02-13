@@ -11,13 +11,11 @@ object TemperatureEvent {
   sealed abstract class EventType extends EnumEntry with Lowercase
 
   object EventType extends Enum[EventType] {
-    case object FanOn extends EventType
+    case object FanOn  extends EventType
     case object FanOff extends EventType
 
     val values = findValues
   }
-
-
   @newtype case class EventId(value: UUID)
   @newtype case class EventCreatedAt(createdAt: LocalDateTime)
 
